@@ -64,9 +64,19 @@ def admin_page():
 
 # Navigation
 page = st.sidebar.selectbox("Choose a Page", ["Time Table", "Registration", "Admin"])
+
 if page == "Time Table":
-    st.experimental_rerun()
+    st.title("Bus Time Table")
+    st.write("### Bus Route Information")
+    st.write("- **Starting Point:** Miyapur")
+    st.write("- **Ending Point:** Adivelama Function Hall, Malkajgiri")
+    st.write("- **Start Time:** 7:00 AM")
+    st.write("- **Estimated Arrival Time:** 9:30 AM")
+    st.write("### Current Boarding Points")
+    st.dataframe(data)  # Display the sorted pickup data
+
 elif page == "Registration":
     registration_page()
+
 elif page == "Admin":
     admin_page()
