@@ -29,11 +29,11 @@ st.title("Koundinya's Wedding Bus Boarding Info")
 
 
 # Sorting data by time (if available)
-if not data.empty and "Time Slot" in data.columns:
-    data["Time Slot"] = pd.to_datetime(data["Time Slot"], errors="coerce").dt.strftime("%H:%M")
-    data = data.sort_values(by=["Time Slot"])
-    st.write("### Current Boarding Points")
-    st.dataframe(data[["Pickup Point", "Location URL", "Time Slot"]])  # Show only relevant columns
+#if not data.empty and "Time Slot" in data.columns:
+  #  data["Time Slot"] = pd.to_datetime(data["Time Slot"], errors="coerce").dt.strftime("%H:%M")
+  #  data = data.sort_values(by=["Time Slot"])
+  #  st.write("### Current Boarding Points")
+   # st.dataframe(data[["Pickup Point", "Location URL", "Time Slot"]])  # Show only relevant columns
 
 # Registration Page
 def registration_page():
