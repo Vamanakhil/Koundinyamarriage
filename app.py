@@ -60,14 +60,10 @@ def registration_page():
             new_entry = pd.DataFrame([[name, phone, pickup_point, time_slot.strftime("%H:%M"), location_url, seats]], 
                                      columns=["Name", "Phone", "Pickup Point", "Time Slot", "Location URL", "Seats"])
             updated_data = pd.concat([data, new_entry], ignore_index=True)
-            save_data(updated_data)  # Save to CSV
+            updated_data.to_csv("boarding_data.csv", index=False)
             st.success("Your response has been recorded! Thank you.")
-<<<<<<< HEAD
-            st.rerun()  # Refresh page to show updated points
-=======
             st.session_state.refresh_admin = True  # Set flag to refresh
             st.rerun()  # <-- Updated from experimental_rerun to rerun
->>>>>>> 8e75e3f2bdc54b94a7f8dff88a3c1e3df2309543
         else:
             st.error("Please fill in all fields.")
 
@@ -80,12 +76,8 @@ def admin_page():
         if st.button("Login"):
             if password == ADMIN_PASSWORD:
                 st.session_state.admin_authenticated = True
-<<<<<<< HEAD
-                st.rerun()  # Refresh page after login
-=======
                 st.session_state.refresh_admin = True  # Trigger refresh
                 st.rerun()  # <-- Updated from experimental_rerun to rerun
->>>>>>> 8e75e3f2bdc54b94a7f8dff88a3c1e3df2309543
             else:
                 st.error("Incorrect Password")
     else:
@@ -94,24 +86,17 @@ def admin_page():
         # Editable data table
         edited_data = st.data_editor(data, use_container_width=True, num_rows="dynamic")
 
+        # Save changes when admin clicks button
         if st.button("Save Changes"):
-            save_data(edited_data)  # Save changes to CSV
+            edited_data.to_csv("boarding_data.csv", index=False)
             st.success("Boarding data updated successfully!")
-<<<<<<< HEAD
-            st.rerun()  # Refresh page to reflect updates
-=======
             st.session_state.refresh_admin = True  # Trigger refresh
             st.rerun()  # <-- Updated from experimental_rerun to rerun
->>>>>>> 8e75e3f2bdc54b94a7f8dff88a3c1e3df2309543
 
         if st.button("Logout"):
             st.session_state.admin_authenticated = False
-<<<<<<< HEAD
-            st.rerun()  # Refresh page after logout
-=======
             st.session_state.refresh_admin = True  # Trigger refresh
             st.rerun()  # <-- Updated from experimental_rerun to rerun
->>>>>>> 8e75e3f2bdc54b94a7f8dff88a3c1e3df2309543
 
 # Navigation
 page = st.sidebar.selectbox("Choose a Page", ["Time Table", "Registration", "Admin"])
@@ -130,7 +115,7 @@ if page == "Time Table":
         st.warning("No boarding points available yet.")
 
 elif page == "Registration":
-    registration_page()
+    registration_page(data)
 
 elif page == "Admin":
     admin_page()
