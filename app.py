@@ -15,6 +15,10 @@ data = load_data()
 # Admin authentication
 ADMIN_PASSWORD = "admin123"
 
+# Initialize session state for admin login
+if "admin_authenticated" not in st.session_state:
+    st.session_state.admin_authenticated = False
+
 # Streamlit UI
 st.title("Wedding Bus Boarding Info")
 
@@ -38,8 +42,7 @@ def registration_page(data):
 
     name = st.text_input("Name")
     phone = st.text_input("Phone Number")
-    
-    # Check if there are pickup points in the data
+
     if data.empty or "Pickup Point" not in data.columns:
         st.warning("No existing pickup points available. Please contact Shashikanth.")
         pickup_point = st.text_input("Enter New Pickup Point")  # Allow manual entry if empty
@@ -64,21 +67,30 @@ def registration_page(data):
 # Admin page
 def admin_page():
     st.title("Admin Access")
-    password = st.text_input("Enter Admin Password", type="password")
-    if st.button("Login"):
-        if password == ADMIN_PASSWORD:
-            st.success("Access Granted. You can edit boarding points.")
-            
-            # Editable data table
-            edited_data = st.data_editor(data, use_container_width=True, num_rows="dynamic")
 
-            # Save changes when admin clicks button
-            if st.button("Save Changes"):
-                edited_data.to_csv("boarding_data.csv", index=False)
-                st.success("Boarding data updated successfully!")
-                st.rerun()  # Refresh the app to show updates
-        else:
-            st.error("Incorrect Password")
+    if not st.session_state.admin_authenticated:
+        password = st.text_input("Enter Admin Password", type="password")
+        if st.button("Login"):
+            if password == ADMIN_PASSWORD:
+                st.session_state.admin_authenticated = True
+                st.experimental_rerun()  # Refresh to enter admin mode
+            else:
+                st.error("Incorrect Password")
+    else:
+        st.success("Access Granted. You can edit boarding points.")
+
+        # Editable data table
+        edited_data = st.data_editor(data, use_container_width=True, num_rows="dynamic")
+
+        # Save changes when admin clicks button
+        if st.button("Save Changes"):
+            edited_data.to_csv("boarding_data.csv", index=False)
+            st.success("Boarding data updated successfully!")
+            st.rerun()  # Refresh the app to show updates
+
+        if st.button("Logout"):
+            st.session_state.admin_authenticated = False
+            st.rerun()  # Refresh to show login screen
 
 # Navigation
 page = st.sidebar.selectbox("Choose a Page", ["Time Table", "Registration", "Admin"])
