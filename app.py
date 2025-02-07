@@ -69,11 +69,14 @@ def admin_page():
         if password == ADMIN_PASSWORD:
             st.success("Access Granted. You can edit boarding points.")
             
+            # Editable data table
             edited_data = st.data_editor(data, use_container_width=True, num_rows="dynamic")
+
+            # Save changes when admin clicks button
             if st.button("Save Changes"):
                 edited_data.to_csv("boarding_data.csv", index=False)
                 st.success("Boarding data updated successfully!")
-                st.rerun()
+                st.rerun()  # Refresh the app to show updates
         else:
             st.error("Incorrect Password")
 
