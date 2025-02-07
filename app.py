@@ -17,20 +17,16 @@ def save_data(data):
 data = load_data()
 
 # Admin authentication
-ADMIN_PASSWORD = "admin123"
+ADMIN_PASSWORD = "allwin@1122"
 
 # Initialize session state for admin login
 if "admin_authenticated" not in st.session_state:
     st.session_state.admin_authenticated = False
 
 # Streamlit UI
-st.title("Wedding Bus Boarding Info")
+st.title("Koundinya's Wedding Bus Boarding Info")
 
-st.write("### Bus Time Table")
-st.write("- **Starting Point:** Miyapur")
-st.write("- **Ending Point:** Adivelama Function Hall, Malkajgiri")
-st.write("- **Start Time:** 7:00 AM")
-st.write("- **Estimated Arrival Time:** 9:30 AM")
+
 
 # Sorting data by time (if available)
 if not data.empty and "Time Slot" in data.columns:
