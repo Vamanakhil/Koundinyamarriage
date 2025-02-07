@@ -2,18 +2,18 @@ import streamlit as st
 import pandas as pd
 import datetime
 
-# Load existing data if available
-@st.cache_data
+# Function to load data
 def load_data():
     try:
         return pd.read_csv("boarding_data.csv")
     except FileNotFoundError:
-        return pd.DataFrame(columns=["Name", "Phone", "Pickup Point", "Time Slot", "Location URL", "Seats"])
+        return pd.DataFrame(columns=["Pickup Point", "Location URL", "Time Slot", "Name", "Phone", "Seats"])
 
-# Save data function
+# Function to save data
 def save_data(data):
     data.to_csv("boarding_data.csv", index=False)
 
+# Load existing data
 data = load_data()
 
 # Admin authentication
@@ -32,14 +32,14 @@ st.write("- **Ending Point:** Adivelama Function Hall, Malkajgiri")
 st.write("- **Start Time:** 7:00 AM")
 st.write("- **Estimated Arrival Time:** 9:30 AM")
 
-# Sorting data by time
-if not data.empty:
+# Sorting data by time (if available)
+if not data.empty and "Time Slot" in data.columns:
     data["Time Slot"] = pd.to_datetime(data["Time Slot"], errors="coerce").dt.strftime("%H:%M")
     data = data.sort_values(by=["Time Slot"])
     st.write("### Current Boarding Points")
-    st.dataframe(data)
+    st.dataframe(data[["Pickup Point", "Location URL", "Time Slot"]])  # Show only relevant columns
 
-# Registration page
+# Registration Page
 def registration_page():
     st.title("Bus Boarding Registration")
     st.write("For new boarding points, contact Shashikanth")
@@ -54,21 +54,21 @@ def registration_page():
         pickup_point = st.radio("Select Pickup Point", data["Pickup Point"].unique())
 
     location_url = st.text_input("Location URL")
-    time_slot = st.time_input("Preferred Pickup Time", value=datetime.time(7, 0), step=300)  # Step = 5 minutes
+    time_slot = st.time_input("Preferred Pickup Time", value=datetime.time(7, 0), step=300)  # 5 min step
     seats = st.number_input("Number of Seats Needed", min_value=1, step=1)
 
     if st.button("Submit"):
         if name and phone and pickup_point and time_slot and location_url and seats:
-            new_entry = pd.DataFrame([[name, phone, pickup_point, time_slot.strftime("%H:%M"), location_url, seats]], 
-                                     columns=["Name", "Phone", "Pickup Point", "Time Slot", "Location URL", "Seats"])
+            new_entry = pd.DataFrame([[pickup_point, location_url, time_slot.strftime("%H:%M"), name, phone, seats]],
+                                     columns=["Pickup Point", "Location URL", "Time Slot", "Name", "Phone", "Seats"])
             updated_data = pd.concat([data, new_entry], ignore_index=True)
             save_data(updated_data)  # Save to CSV
             st.success("Your response has been recorded! Thank you.")
-            st.rerun()  # Refresh page to show updated points
+            st.rerun()  # Refresh page to reflect updates
         else:
             st.error("Please fill in all fields.")
 
-# Admin page
+# Admin Page
 def admin_page():
     st.title("Admin Access")
 
@@ -107,7 +107,7 @@ if page == "Time Table":
     st.write("- **Estimated Arrival Time:** 9:30 AM")
     st.write("### Current Boarding Points")
     if not data.empty:
-        st.dataframe(data)  # Display sorted pickup data
+        st.dataframe(data[["Pickup Point", "Location URL", "Time Slot"]])  # Show sorted pickup points
     else:
         st.warning("No boarding points available yet.")
 
