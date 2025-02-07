@@ -18,6 +18,8 @@ ADMIN_PASSWORD = "admin123"
 # Initialize session state for admin login
 if "admin_authenticated" not in st.session_state:
     st.session_state.admin_authenticated = False
+if "refresh_admin" not in st.session_state:
+    st.session_state.refresh_admin = False
 
 # Streamlit UI
 st.title("Wedding Bus Boarding Info")
@@ -60,7 +62,8 @@ def registration_page(data):
             updated_data = pd.concat([data, new_entry], ignore_index=True)
             updated_data.to_csv("boarding_data.csv", index=False)
             st.success("Your response has been recorded! Thank you.")
-            st.rerun()
+            st.session_state.refresh_admin = True  # Set flag to refresh
+            st.rerun()  # <-- Updated from experimental_rerun to rerun
         else:
             st.error("Please fill in all fields.")
 
@@ -73,7 +76,8 @@ def admin_page():
         if st.button("Login"):
             if password == ADMIN_PASSWORD:
                 st.session_state.admin_authenticated = True
-                st.experimental_rerun()  # Refresh to enter admin mode
+                st.session_state.refresh_admin = True  # Trigger refresh
+                st.rerun()  # <-- Updated from experimental_rerun to rerun
             else:
                 st.error("Incorrect Password")
     else:
@@ -86,11 +90,13 @@ def admin_page():
         if st.button("Save Changes"):
             edited_data.to_csv("boarding_data.csv", index=False)
             st.success("Boarding data updated successfully!")
-            st.rerun()  # Refresh the app to show updates
+            st.session_state.refresh_admin = True  # Trigger refresh
+            st.rerun()  # <-- Updated from experimental_rerun to rerun
 
         if st.button("Logout"):
             st.session_state.admin_authenticated = False
-            st.rerun()  # Refresh to show login screen
+            st.session_state.refresh_admin = True  # Trigger refresh
+            st.rerun()  # <-- Updated from experimental_rerun to rerun
 
 # Navigation
 page = st.sidebar.selectbox("Choose a Page", ["Time Table", "Registration", "Admin"])
